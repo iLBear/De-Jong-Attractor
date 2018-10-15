@@ -10,6 +10,10 @@ var gui_h = 100;
 var pos = new Vec2(0.0, 0.0);
 var prev_pos = new Vec2(0.0, 0.0);
 
+var lp = true;
+var bg_clear = true;
+var pointNum = 3000;
+
 var param = {
 	a: -2.78,
 	b: -2.79,
@@ -56,7 +60,7 @@ function randomizeParam() {
 	sa.value(param.a);
 	sb.value(param.b);
 	sc.value(param.c);
-	sd.value(param.d);  
+	sd.value(param.d);	
 }
 
 function getParam(){
@@ -68,12 +72,12 @@ function getParam(){
 
 function drawPoint(){
 	fill(200);
-	for(var n = 0; n < 1000; n++){ // noprotect  
+	for(var n = 0; n < pointNum; n++){ // noprotect	
 		pos.x = sin(param.a * prev_pos.y) - cos(param.b * prev_pos.x);
 		pos.y = sin(param.c * prev_pos.x) - cos(param.d * prev_pos.y);
 		prev_pos = JSON.parse(JSON.stringify(pos));
-	  // stroke(map(pos.x, -2, 2, 0, 20), map(pos.y, -2, 2, 0, 20), 100);
-	  // fill(map(pos.x, -2, 2, 0, 100), map(pos.y, -2, 2, 0, 100), 100);
+		// stroke(map(pos.x, -2, 2, 0, 20), map(pos.y, -2, 2, 0, 20), 100);
+		// fill(map(pos.x, -2, 2, 0, 100), map(pos.y, -2, 2, 0, 100), 100);
 		fill(n%30+30, n%50+50, n%50+50);
 		ellipse(map(pos.x, -2.0, 2.0, win_w*0.1, win_w*0.9), map(pos.y, -2.0, 2.0, win_h*0.1, win_h*0.9), 1, 1);
 	}
@@ -85,7 +89,7 @@ function setup() {
 	background(0);
 	// frameRate(15);
 	initGUI();
-	// noLoop();
+	lp ? loop() : noLoop();
 	noStroke();
 }
 
@@ -95,47 +99,58 @@ function drawSliderValue(){
 	push();
 		fill(0);
 		textSize(14);
-		translate(20, win_h+20)
-		text(Math.round(sa.value()*10000)/10000, 0, 0);
-		text(Math.round(sb.value()*10000)/10000, 0, 23);
-		text(Math.round(sc.value()*10000)/10000, 0, 46);
-		text(Math.round(sd.value()*10000)/10000, 0, 69);
+		translate(6, win_h+20)
+		text("a: "+Math.round(sa.value()*10000)/10000, 0, 0);
+		text("b: "+Math.round(sb.value()*10000)/10000, 0, 23);
+		text("c: "+Math.round(sc.value()*10000)/10000, 0, 46);
+		text("d: "+Math.round(sd.value()*10000)/10000, 0, 69);
 	pop();
 }
 
 function draw() {
-	// background(0);
+	if(bg_clear) background(0);
 	drawSliderValue();
-	getParam();  
+	getParam();	
 	drawPoint();
 }
 
 function keyPressed() {
 	switch(keyCode){
-	  case 32:  //space_key
-	    clear();
-	    randomizeParam();
-	    background(0);
-	    draw();
-	    break;
+		case 32:	//space_key
+			clear();
+			randomizeParam();
+			background(0);
+			draw();
+			break;
 
-	  case 66:  //B key 
-	    break;
+		case 66:	//B key 
+			bg_clear = !bg_clear;
+			pointNum = 3000;
+			break;
 
-	  case 71:
-	    break;
+		case 67:	//C key 
+			clear();
+			background(0);
+			break;
 
-	  case 80:  //P key
-	    console.log("a: "+param.a+",");
-	    console.log("b: "+param.b+",");
-	    console.log("c: "+param.c+",");
-	    console.log("d: "+param.d);
-	    break;
+		case 76:	//L key
+			lp = !lp;
+			lp ? loop() : noLoop();
+			pointNum = lp ? 1000 : 100000;
+			break;
 
-	  case 82:  //R key
-	    break;
-	    
-	  default:
-	    break;
+
+		case 80:	//P key
+			console.log("a: "+param.a+",");
+			console.log("b: "+param.b+",");
+			console.log("c: "+param.c+",");
+			console.log("d: "+param.d);
+			break;
+
+		case 82:	//R key
+			break;
+			
+		default:
+			break;
 	}
 }
